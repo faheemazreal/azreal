@@ -1,0 +1,6 @@
+{
+  "name": "Home Theater Cinema",
+  "description": "Personal streaming platform with high-end anime and home cinema UI inspired by Animelok and AniWatch for digitized CD collections and anime series.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
