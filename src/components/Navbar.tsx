@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   Bookmark, Clock, Search, 
-  Flame, X, Tv, Shuffle, Play
+  Flame, X, Tv, Shuffle
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { ViewFilter } from '../types';
-import { searchAnime, AnimeResult } from '../services/api';
 
 interface NavbarProps {
   currentFilter: ViewFilter;
@@ -26,74 +24,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   watchlistCount,
   continueWatchingCount,
 }) => {
-  const navigate = useNavigate();
-  const [results, setResults] = useState<AnimeResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchResults = async () => {
-      if (!searchQuery.trim()) {
-        setResults([]);
-        return;
-      }
-      setIsSearching(true);
-      const data = await searchAnime(searchQuery);
-      setResults(data.slice(0, 5)); // show top 5
-      setIsSearching(false);
-    };
-
-    const debounce = setTimeout(() => fetchResults(), 300);
-    return () => clearTimeout(debounce);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelectAnime = (id: string) => {
-    setShowDropdown(false);
-    onSearchChange('');
-    navigate(`/anime/${id}`);
-  };
-
-  const SearchDropdown = () => {
-    if (!showDropdown || !searchQuery.trim()) return null;
-    
-    return (
-      <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-50 max-h-96 overflow-y-auto">
-        {isSearching ? (
-          <div className="p-4 text-center text-zinc-500 text-sm">Searching...</div>
-        ) : results.length > 0 ? (
-          <div className="flex flex-col">
-            {results.map((anime) => (
-              <button
-                key={anime.id}
-                onMouseDown={() => handleSelectAnime(anime.id)}
-                className="flex items-center gap-3 p-3 hover:bg-zinc-800 transition text-left"
-              >
-                <img src={anime.image} alt={anime.title.english || anime.title.romaji} className="w-10 h-14 object-cover rounded" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{anime.title.english || anime.title.romaji || anime.title.native}</p>
-                  <p className="text-xs text-emerald-400 mt-1">{anime.releaseDate} • {anime.type}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="p-4 text-center text-zinc-500 text-sm">No results found for "{searchQuery}"</div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <header 
       id="animelok-navbar"
@@ -212,33 +142,23 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Right Section: Search & Actions */}
         <div className="flex items-center gap-3">
           {/* Quick Search Input */}
-          <div ref={searchRef} className="relative hidden md:block w-64 lg:w-72">
+          <div className="relative hidden md:block w-64 lg:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                onSearchChange(e.target.value);
-                setShowDropdown(true);
-              }}
-              onFocus={() => setShowDropdown(true)}
+              onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search anime, genre, studio..."
               className="w-full pl-9 pr-8 py-2 rounded-xl bg-zinc-900/90 border border-zinc-800 focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/60 text-xs text-zinc-200 placeholder-zinc-500 transition-all outline-none"
             />
             {searchQuery && (
               <button
-                onClick={() => {
-                  onSearchChange('');
-                  setShowDropdown(false);
-                }}
+                onClick={() => onSearchChange('')}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
-            
-            {/* SEARCH DROPDOWN */}
-            <SearchDropdown />
           </div>
 
           {/* Random Anime Picker */}
@@ -260,30 +180,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => {
-              onSearchChange(e.target.value);
-              setShowDropdown(true);
-            }}
-            onFocus={() => setShowDropdown(true)}
+            onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search anime, genres..."
             className="w-full pl-9 pr-8 py-2 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-emerald-500 text-xs text-zinc-200 placeholder-zinc-500 outline-none"
           />
           {searchQuery && (
             <button
-              onClick={() => {
-                onSearchChange('');
-                setShowDropdown(false);
-              }}
+              onClick={() => onSearchChange('')}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-          {/* SEARCH DROPDOWN MOBILE */}
-          <SearchDropdown />
         </div>
       </div>
     </header>
   );
 };
-

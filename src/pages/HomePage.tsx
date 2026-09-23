@@ -15,7 +15,6 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
-  const [continueWatching, setContinueWatching] = useState<any[]>([]);
 
   const navigate = useNavigate();
 
@@ -30,21 +29,11 @@ export default function HomePage() {
       setRecent(recentData);
       setIsLoading(false);
     };
-    
-    try {
-      const stored = JSON.parse(localStorage.getItem('recent_watched') || '[]');
-      setContinueWatching(stored);
-    } catch (e) {}
-
     fetchData();
   }, []);
 
   const handlePlayMovie = (anime: any) => {
-    if (anime.episodeId) {
-      navigate(`/watch/${anime.id}?ep=${anime.episodeId}`);
-    } else {
-      navigate(`/anime/${anime.id}`);
-    }
+    navigate(`/anime/${anime.id}`);
   };
 
   const handleOpenDetails = (anime: any) => {
@@ -75,27 +64,6 @@ export default function HomePage() {
   const featured = trending.slice(0, 5).map(mapToMovie);
   const trendingMovies = trending.map(mapToMovie);
   const recentMovies = recent.map(mapToMovie);
-  
-  const continueWatchingMovies = continueWatching.map(cw => ({
-    id: cw.id,
-    episodeId: cw.episodeId,
-    title: cw.title,
-    originalTitle: cw.title,
-    description: `Resume playing episode...`,
-    posterUrl: cw.image,
-    backdropUrl: cw.cover || cw.image,
-    rating: 'PG-13',
-    userRating: 0,
-    year: 'Recent',
-    genres: [],
-    duration: 24,
-    episodesCount: 0,
-    status: '',
-    type: 'TV',
-    discInfo: { format: 'Web', sourceType: 'Stream' },
-    cast: [],
-    director: 'Various',
-  }));
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-emerald-500 selection:text-black">
@@ -111,7 +79,7 @@ export default function HomePage() {
           }
         }}
         watchlistCount={0}
-        continueWatchingCount={continueWatching.length}
+        continueWatchingCount={0}
       />
 
       <main className="pb-24">
@@ -131,19 +99,6 @@ export default function HomePage() {
             )}
             
             <div className="space-y-8 pt-6">
-              {continueWatchingMovies.length > 0 && (
-                <MovieRow
-                  id="row-continue-watching"
-                  title="Continue Watching"
-                  subtitle="Pick up where you left off"
-                  badge="Recent"
-                  movies={continueWatchingMovies}
-                  onPlay={handlePlayMovie}
-                  onOpenDetails={handleOpenDetails}
-                  onToggleWatchlist={() => {}}
-                />
-              )}
-
               <MovieRow
                 id="row-recent-episodes"
                 title="Latest Episodes"
