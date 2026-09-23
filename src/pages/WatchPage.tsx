@@ -23,6 +23,28 @@ export default function WatchPage() {
       const animeData = await getAnimeDetails(id);
       setAnime(animeData);
       
+      // Save to recently watched
+      if (animeData) {
+        try {
+          const recent = JSON.parse(localStorage.getItem('recent_watched') || '[]');
+          // Remove if exists
+          const filtered = recent.filter((r: any) => r.id !== animeData.id);
+          // Add to front
+          filtered.unshift({
+            id: animeData.id,
+            title: animeData.title.english || animeData.title.romaji || animeData.title.native,
+            image: animeData.image,
+            cover: animeData.cover,
+            episodeId: epId,
+            watchedAt: new Date().toISOString()
+          });
+          // Keep only top 20
+          localStorage.setItem('recent_watched', JSON.stringify(filtered.slice(0, 20)));
+        } catch (e) {
+          console.error("Failed to save recent watched:", e);
+        }
+      }
+
       setIsLoading(false);
     };
     

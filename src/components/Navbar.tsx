@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {results.map((anime) => (
               <button
                 key={anime.id}
-                onClick={() => handleSelectAnime(anime.id)}
+                onMouseDown={() => handleSelectAnime(anime.id)}
                 className="flex items-center gap-3 p-3 hover:bg-zinc-800 transition text-left"
               >
                 <img src={anime.image} alt={anime.title.english || anime.title.romaji} className="w-10 h-14 object-cover rounded" />
