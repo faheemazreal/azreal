@@ -16,5 +16,12 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    proxy: {
+      '/api': {
+        target: 'https://api-consumet.vercel.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
 });

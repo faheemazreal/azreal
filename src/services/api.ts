@@ -3,7 +3,8 @@ import axios from 'axios';
 // We are using a public, working Consumet API instance for the demo to ensure the UI populates.
 // Your specific Vercel deployment (https://hianime-api-self.vercel.app) is currently misconfigured 
 // and serving raw source code instead of running as a server. 
-const BASE_URL = 'https://api-consumet.vercel.app/meta/anilist';
+// We use a Vite proxy (see vite.config.ts) to avoid CORS issues.
+const BASE_URL = '/api/meta/anilist';
 
 const api = axios.create({
   baseURL: BASE_URL,
