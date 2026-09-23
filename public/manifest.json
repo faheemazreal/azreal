@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Home Theater Cinema",
-  "short_name": "HomeCinema",
-  "description": "Personal streaming platform and home theater front end for digitized CD movie collections and home cinema streaming.",
+  "name": "Azreal",
+  "short_name": "Azreal",
+  "description": "Azreal Anime Streaming Platform",
   "theme_color": "#09090b",
   "background_color": "#09090b",
   "display": "standalone",

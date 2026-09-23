@@ -50,7 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-black tracking-tight text-white group-hover:text-emerald-400 transition-colors">
-                  ANIMELOK
+                  AZREAL
                 </span>
                 <span className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-mono-tech uppercase font-bold tracking-widest bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded">
                   STREAM
