@@ -98,8 +98,6 @@ export default function WatchPage() {
                 frameBorder="0" 
                 scrolling="no" 
                 allowFullScreen
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-                referrerPolicy="no-referrer"
                 className="w-full aspect-video rounded-xl bg-black border border-zinc-800"
               ></iframe>
             ) : (
@@ -109,7 +107,7 @@ export default function WatchPage() {
             )}
           </div>
           
-          <div className="flex flex-col md:flex-row justify-between gap-4 p-6 bg-zinc-900/50 border border-zinc-800/80 rounded-xl">
+          <div className="flex flex-col gap-4 p-6 bg-zinc-900/50 border border-zinc-800/80 rounded-xl">
             <div>
               <h1 className="text-xl font-bold text-white mb-2">{anime.title.english || anime.title.romaji}</h1>
               <p className="text-emerald-400 font-mono-tech text-sm">
@@ -117,23 +115,45 @@ export default function WatchPage() {
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                <Languages className="w-4 h-4" /> Language:
+            <div className="mt-2 border-t border-zinc-800/80 pt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Tv className="w-4 h-4 text-zinc-400" />
+                <span className="text-sm font-semibold text-zinc-300">SERVERS</span>
               </div>
-              <div className="flex bg-zinc-800 rounded-lg p-1 border border-zinc-700">
-                <button
-                  onClick={() => setLanguage('sub')}
-                  className={`px-3 py-1 text-sm rounded-md transition ${language === 'sub' ? 'bg-emerald-500 text-black font-bold' : 'text-zinc-300 hover:text-white'}`}
-                >
-                  Sub
-                </button>
-                <button
-                  onClick={() => setLanguage('dub')}
-                  className={`px-3 py-1 text-sm rounded-md transition ${language === 'dub' ? 'bg-emerald-500 text-black font-bold' : 'text-zinc-300 hover:text-white'}`}
-                >
-                  Dub
-                </button>
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 w-8">Sub</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setLanguage('sub')}
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                        language === 'sub'
+                          ? 'bg-emerald-500 text-black shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                      }`}
+                    >
+                      <Play className="w-3 h-3" /> Megaplay
+                    </button>
+                  </div>
+                </div>
+
+                <div className="w-px h-6 bg-zinc-800 hidden sm:block"></div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 w-8">Dub</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setLanguage('dub')}
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                        language === 'dub'
+                          ? 'bg-emerald-500 text-black shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                      }`}
+                    >
+                      <Play className="w-3 h-3" /> Megaplay
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
