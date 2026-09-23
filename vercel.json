@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://api-consumet.vercel.app/$1"
+      "destination": "https://anikotoapi.site/$1"
     },
     {
       "source": "/(.*)",

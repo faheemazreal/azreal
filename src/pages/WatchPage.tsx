@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Server, Settings } from 'lucide-react';
-import { getAnimeDetails, getStreamingLinks, AnimeInfo, StreamingData } from '../services/api';
+import { ArrowLeft, Play, Languages } from 'lucide-react';
+import { getAnimeDetails, AnimeInfo } from '../services/api';
 import { Navbar } from '../components/Navbar';
-import { HlsPlayer } from '../components/HlsPlayer';
 
 export default function WatchPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,33 +12,16 @@ export default function WatchPage() {
   const epId = searchParams.get('ep');
   
   const [anime, setAnime] = useState<AnimeInfo | null>(null);
-  const [streamData, setStreamData] = useState<StreamingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeQuality, setActiveQuality] = useState<string>('default');
+  const [language, setLanguage] = useState<'sub' | 'dub'>('sub');
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id || !epId) return;
       setIsLoading(true);
       
-      // Fetch concurrently
-      const [animeData, streamLinks] = await Promise.all([
-        getAnimeDetails(id),
-        getStreamingLinks(epId)
-      ]);
-      
+      const animeData = await getAnimeDetails(id);
       setAnime(animeData);
-      setStreamData(streamLinks);
-      
-      if (streamLinks?.sources) {
-        // Try to find auto or default, otherwise pick the best available
-        const defaultSrc = streamLinks.sources.find(s => s.quality === 'default' || s.quality === 'auto');
-        if (defaultSrc) {
-          setActiveQuality(defaultSrc.quality);
-        } else if (streamLinks.sources.length > 0) {
-          setActiveQuality(streamLinks.sources[0].quality);
-        }
-      }
       
       setIsLoading(false);
     };
@@ -55,7 +37,7 @@ export default function WatchPage() {
     );
   }
 
-  if (!anime || !streamData) {
+  if (!anime) {
     return (
       <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center">
         <h2 className="text-2xl font-bold mb-4">Episode or stream not found.</h2>
@@ -64,7 +46,6 @@ export default function WatchPage() {
     );
   }
 
-  const currentSource = streamData.sources.find(s => s.quality === activeQuality) || streamData.sources[0];
   const currentEpisode = anime.episodes?.find(e => e.id === epId);
 
   return (
@@ -87,11 +68,21 @@ export default function WatchPage() {
           </button>
           
           <div className="w-full">
-            {currentSource ? (
-              <HlsPlayer src={currentSource.url} poster={currentEpisode?.image} />
+            {currentEpisode?.embedId ? (
+              <iframe 
+                src={`https://megaplay.buzz/stream/s-2/${currentEpisode.embedId}/${language}`} 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                scrolling="no" 
+                allowFullScreen
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                referrerPolicy="no-referrer"
+                className="w-full aspect-video rounded-xl bg-black border border-zinc-800"
+              ></iframe>
             ) : (
               <div className="w-full aspect-video bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-                <p className="text-zinc-500">No stream available.</p>
+                <p className="text-zinc-500">No stream available for this episode.</p>
               </div>
             )}
           </div>
@@ -106,19 +97,22 @@ export default function WatchPage() {
             
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                <Server className="w-4 h-4" /> Server:
+                <Languages className="w-4 h-4" /> Language:
               </div>
-              <select
-                value={activeQuality}
-                onChange={(e) => setActiveQuality(e.target.value)}
-                className="bg-zinc-800 text-white text-sm rounded-lg px-3 py-1.5 border border-zinc-700 outline-none"
-              >
-                {streamData.sources.map(src => (
-                  <option key={src.quality} value={src.quality}>
-                    {src.quality}
-                  </option>
-                ))}
-              </select>
+              <div className="flex bg-zinc-800 rounded-lg p-1 border border-zinc-700">
+                <button
+                  onClick={() => setLanguage('sub')}
+                  className={`px-3 py-1 text-sm rounded-md transition ${language === 'sub' ? 'bg-emerald-500 text-black font-bold' : 'text-zinc-300 hover:text-white'}`}
+                >
+                  Sub
+                </button>
+                <button
+                  onClick={() => setLanguage('dub')}
+                  className={`px-3 py-1 text-sm rounded-md transition ${language === 'dub' ? 'bg-emerald-500 text-black font-bold' : 'text-zinc-300 hover:text-white'}`}
+                >
+                  Dub
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -128,7 +122,7 @@ export default function WatchPage() {
           <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-xl flex flex-col h-full overflow-hidden">
             <div className="p-4 border-b border-zinc-800 bg-zinc-900/50">
               <h3 className="font-bold text-white flex items-center gap-2">
-                <Play className="w-4 h-4 text-emerald-500" /> All Episodes ({anime.episodes?.length})
+                <Play className="w-4 h-4 text-emerald-500" /> All Episodes ({anime.episodes?.length || 0})
               </h3>
             </div>
             
